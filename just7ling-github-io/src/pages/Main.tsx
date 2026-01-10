@@ -1,7 +1,9 @@
 export const Main = () => {
   return (
-    <>
-      <h1>welcome!</h1>
-    </>
+    <div className="min-h-screen min-w-screen flex justify-center items-center">
+      <div className="align-middle">
+        <h1 className="font-pretendard">Font : Pretendard</h1>
+      </div>
+    </div>
   );
 };

@@ -3,3 +3,38 @@
 @theme {
   --font-pretendard: Pretendard;
 }
+
+.page-transition {
+  animation-duration: 700ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes blur-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+.animate-blur-in {
+  animation-name: blur-in;
+}
+
+@layer utilities {
+  .bg-portfolio {
+    background-image: radial-gradient(
+      circle clamp(600px, 65vw, 900px) at 20% 20%,
+      rgba(193, 216, 255, 0.8) 16%,
+      rgba(210, 227, 255, 0.59) 62%,
+      rgba(218, 232, 255, 0.15) 100%
+    );
+  }
+}
+

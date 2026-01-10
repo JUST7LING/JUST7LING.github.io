@@ -22,7 +22,7 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <div className="">
+    <div className="overflow-hidden">
       <div
         className={
           animateToMain ? 'page-transition animate-blur-in' : undefined

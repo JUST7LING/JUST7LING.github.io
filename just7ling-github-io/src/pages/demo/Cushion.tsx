@@ -12,6 +12,7 @@ export const Cushion = () => {
   const [name, setName] = useState('');
   const [dept, setDept] = useState('');
   const [position, setPosition] = useState('');
+  const [userKey, setUserKey] = useState('');
 
   const [purpose, setPurpose] = useState('이메일');
   const [length, setLength] = useState('제시된 문장만');
@@ -21,10 +22,10 @@ export const Cushion = () => {
   const [input, setInput] = useState('');
   const [result, setResult] = useState('');
   const [copied, setCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const resultRef = useRef<HTMLDivElement | null>(null);
-
-  const [userKey, setUserKey] = useState('');
 
   const prompt = `
     다음 가이드라인을 참고하여, 주어진 [문장]을 쿠션어로 바꿔줘.
@@ -61,32 +62,36 @@ export const Cushion = () => {
     }
   }, [result]);
 
-  const actionTest = () => {
-    console.log(`calling actionTest ... ${result}`);
-    // setResult(prompt);
+  const action = () => {
     setCurrentTime(new Date());
     handleConvert();
   };
 
   const handleConvert = async () => {
-    const res = await fetch('https://api.openai.com/v1/responses', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userKey}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-5-mini',
-        input: prompt,
-      }),
-    });
+    setIsLoading(true);
 
-    const data = await res.json();
+    try {
+      const res = await fetch('https://api.openai.com/v1/responses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userKey}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-5-mini',
+          input: prompt,
+        }),
+      });
 
-    const text = data.output?.find((item: any) => item.type === 'message')
-      ?.content?.[0]?.text;
+      const data = await res.json();
 
-    setResult(text);
+      const text = data.output?.find((item: any) => item.type === 'message')
+        ?.content?.[0]?.text;
+
+      setResult(text);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCopy = () => {
@@ -276,12 +281,21 @@ export const Cushion = () => {
 
         {/* 생성 버튼 */}
         <button
-          onClick={actionTest}
-          disabled={!input.trim()}
-          className="w-full !bg-gradient-to-r !from-purple-500 !to-pink-500 !text-white py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          onClick={action}
+          disabled={!input.trim() || isLoading}
+          className="w-full !bg-gradient-to-r !from-purple-500 !to-pink-500 !text-white py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition disabled:opacity-50 flex items-center justify-center gap-2"
         >
-          <Sparkles className="w-5 h-5" />
-          쿠션어 생성하기
+          {isLoading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              생성 중...
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-5 h-5" />
+              쿠션어 생성하기
+            </>
+          )}
         </button>
 
         {/* 결과 */}

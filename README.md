@@ -10,7 +10,7 @@
 
 시간 날 때마다 조금씩 깎을 거라 오래 걸릴 예정입니다.
 <br/>
-<a href="https://just7ling.github.io/">여기</a>로 들어가시면 현재까지 만들어진 Demofolio를 보실 수 있어요 ...
+<a href="https://just7ling.github.io/#/cushion-generator">여기</a>로 들어가시면 현재까지 만들어진 Demofolio를 보실 수 있어요 ...
 
-처음으로 보이는 화면은 ... 장난을 좀 쳤습니다 참고바랍니다
+지금은 **쿠션어 생성기** 페이지만 운영하고 있어요.
 

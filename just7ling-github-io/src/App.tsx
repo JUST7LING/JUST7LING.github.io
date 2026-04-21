@@ -1,8 +1,8 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-import { Landing } from './pages/Landing';
+// import { Landing } from './pages/Landing';
 import { Cushion } from './pages/demo/Cushion';
-import { Main } from './pages/Main';
+// import { Main } from './pages/Main';
 
 function App() {
   const location = useLocation();
@@ -30,8 +30,8 @@ function App() {
         }
       >
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/main" element={<Main />} />
+          {/* <Route path="/" element={<Landing />} /> */}
+          {/* <Route path="/main" element={<Main />} /> */}
           <Route path="/cushion-generator" element={<Cushion />} />
         </Routes>
       </div>

@@ -23,9 +23,11 @@ export const Cushion = () => {
   const [result, setResult] = useState('');
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [errorCode, setErrorCode] = useState<string | null>(null);
+  const [errorObj, setErrorObj] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const resultRef = useRef<HTMLDivElement | null>(null);
+  const keyRef = useRef<HTMLDivElement | null>(null);
 
   const prompt = `
     다음 가이드라인을 참고하여, 주어진 [문장]을 쿠션어로 바꿔줘.
@@ -69,6 +71,7 @@ export const Cushion = () => {
 
   const handleConvert = async () => {
     setIsLoading(true);
+    setErrorCode(null); // 이전 에러 초기화
 
     try {
       const res = await fetch('https://api.openai.com/v1/responses', {
@@ -83,12 +86,29 @@ export const Cushion = () => {
         }),
       });
 
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        setErrorObj(errData);
+        throw new Error(
+          errData?.error?.message || `Request failed: ${res.status}`,
+        );
+      }
+
       const data = await res.json();
 
       const text = data.output?.find((item: any) => item.type === 'message')
         ?.content?.[0]?.text;
 
-      setResult(text);
+      setResult(text ?? '');
+    } catch (err: any) {
+      setErrorCode(errorObj?.code);
+      console.log(errorCode);
+      // 유효하지 않은 api key를 입력한 경우
+      if (errorCode === 'invalid_api_key')
+        keyRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
     } finally {
       setIsLoading(false);
     }
@@ -154,14 +174,19 @@ export const Cushion = () => {
               />
             </div>
           </div>
-          <div className="relative">
+          <div className="relative" ref={keyRef}>
             <Badge className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 !text-gray-400" />
             <input
-              className="w-full !bg-white !text-gray-900 !border !border-gray-200 pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition placeholder:!text-gray-400"
+              className={`w-full !bg-white !text-gray-900 !border ${errorCode === 'invalid_api_key' ? '!border-red-500' : '!border-gray-200'} pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition placeholder:!text-gray-400`}
               placeholder="GPT API Key를 입력해 주세요."
               value={userKey}
               onChange={(e) => setUserKey(e.target.value)}
             />
+            {errorCode === 'invalid_api_key' && (
+              <span className="text-red-500">
+                잘못된 api key를 입력했어요. 확인 후 다시 입력해 주세요.
+              </span>
+            )}
           </div>
         </div>
 
@@ -220,7 +245,7 @@ export const Cushion = () => {
           </div>
         </div>
 
-        {/* 인삿말 포함 여부 */}
+        {/* 인사말 포함 여부 */}
         <div className="!bg-white rounded-2xl shadow-sm p-6 !border !border-purple-100">
           <label className="flex items-center gap-3 cursor-pointer">
             <div className="relative">
@@ -239,7 +264,7 @@ export const Cushion = () => {
               </span>
               <p className="text-sm !text-gray-500">
                 작성될 쿠션어 내용에 간단한 안부 인사를 포함해요. (호출 시점에
-                따라 다른 인삿말이 나와요.)
+                따라 다른 인사말이 나와요.)
               </p>
             </div>
           </label>
